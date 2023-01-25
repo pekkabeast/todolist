@@ -1,0 +1,32 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+.pagewrapper {
+  height: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.topbar {
+  height: 44px;
+  background-color: pink;
+}
+
+.mainApp {
+  display: flex;
+  flex-flow: row;
+  align-items: stretch;
+  height: 100%;
+}
+
+.sidePane {
+  width: 200px;
+  background-color: red;
+}
