@@ -17,6 +17,21 @@ body {
 .topbar {
   height: 44px;
   background-color: pink;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  padding: 0.5rem;
+  padding-left: 1rem;
+  box-sizing: border-box;
+}
+
+.appTitle {
+  margin-left: 2rem;
+}
+
+.btn {
+  width: 24px;
+  height: 24px;
 }
 
 .mainApp {
@@ -26,7 +41,44 @@ body {
   height: 100%;
 }
 
+/*Side Pane */
 .sidePane {
-  width: 200px;
+  width: 305px;
   background-color: red;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.sidePane h2 {
+  font-size: 1rem;
+}
+
+.tile {
+  margin: 0.5rem 0 0.5rem 0;
+}
+
+.todoNav {
+  display: flex;
+  flex-flow: column nowrap;
+  padding-bottom: 1rem;
+}
+
+.nav-heading {
+  padding-bottom: 0.5rem;
+}
+
+.projects-heading-wrapper {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+
+.project-btns {
+  display: flex;
+}
+
+.mainContent {
+  height: 100%;
+  width: 100%;
+  background-color: #d1d5db;
 }

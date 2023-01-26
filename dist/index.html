@@ -9,13 +9,55 @@
   </head>
   <body>
     <div class="pagewrapper">
-      <div class="topbar"></div>
+      <div class="topbar">
+        <button class="btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <title>Menu</title>
+            <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
+          </svg>
+        </button>
+        <button class="btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <title>home-outline</title>
+            <path
+              d="M12 5.69L17 10.19V18H15V12H9V18H7V10.19L12 5.69M12 3L2 12H5V20H11V14H13V20H19V12H22"
+            />
+          </svg>
+        </button>
+        <h1 class="appTitle">To Do List App</h1>
+      </div>
       <div class="mainApp">
-        <div class="sidePane">f</div>
-        <div class="mainContent">f</div>
+        <div class="sidePane">
+          <div class="todoNav">
+            <h2 class="nav-heading">To-do List</h2>
+            <button class="tile" id="today">Today</button>
+            <button class="tile" id="upcoming">Upcoming</button>
+          </div>
+          <div class="nav-heading">
+            <div class="projects-heading-wrapper">
+              <h2 class="nav-heading">Projects</h2>
+              <div class="project-btns">
+                <button class="addProjects btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <title>plus</title>
+                    <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                  </svg>
+                </button>
+                <button class="showProjects btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <title>chevron-down</title>
+                    <path
+                      d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mainContent"></div>
       </div>
     </div>
-
     <script src="main.js"></script>
   </body>
 </html>
