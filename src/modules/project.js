@@ -1,6 +1,5 @@
-/* Functionality of projects
-- project should have a name
-- should store tasks
+/* Project Factory Function
+- creates a project object containing name and tasks
 */
 
 const project = (name) => {
@@ -18,7 +17,7 @@ const project = (name) => {
     __tasks.append(taskObject);
   };
 
-  const getAllTasks = () => tasks;
+  const getAllTasks = () => __tasks;
 
   const getTodayTasks = () => {};
 
@@ -33,3 +32,5 @@ const project = (name) => {
     getAllTasks,
   };
 };
+
+export { project };

@@ -57,7 +57,7 @@ body {
   margin: 0.5rem 0 0.5rem 0;
 }
 
-.todoNav {
+.todo-nav {
   display: flex;
   flex-flow: column nowrap;
   padding-bottom: 1rem;

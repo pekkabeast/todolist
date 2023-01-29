@@ -1,0 +1,29 @@
+.form-wrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-container {
+  border: black;
+  background-color: white;
+}
+
+.nameForm {
+  display: flex;
+  flex-flow: column nowrap;
+  padding: 1rem;
+}
+
+.form-header {
+  padding: 1rem 0 0.5rem 1rem;
+  border-bottom: 1px solid lightgray;
+}
+
+.nameForm label {
+  padding-bottom: 0.5rem;
+}

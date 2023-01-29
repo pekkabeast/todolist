@@ -1,3 +1,7 @@
+import { display } from "./modules/display.js";
+
+document.addEventListener("DOMContentLoaded", display.initDisplay);
+
 /* App Features
 
 Header

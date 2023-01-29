@@ -1,5 +1,7 @@
-//Factory function to create tasks
-/* Parameters:
+/* Factory function for creating tasks
+- holds data specific to task
+
+Parameters:
 - title
 - description
 - dueDate
