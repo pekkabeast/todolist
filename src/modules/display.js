@@ -1,5 +1,6 @@
 import { add } from "date-fns";
 import "./displayStyles.css";
+import { populateStorage } from "./storage.js";
 
 /*
 DOM Logic
@@ -111,15 +112,20 @@ const display = (() => {
       cancelBtn.textContent = "Cancel";
       cancelBtn.id = "cancelAddProject";
       cancelBtn.classList.add("cancel-btn");
-      nameForm.append(nameLabel, nameInput, cancelBtn);
+      //submit button
+      const submitBtn = document.createElement("button");
+      submitBtn.textContent = "Submit";
+      submitBtn.id = "submitAddProject";
+      submitBtn.setAttribute("type", "submit");
+      nameForm.append(nameLabel, nameInput, cancelBtn, submitBtn);
       formDiv.append(formHeader, nameForm);
       formWrapper.appendChild(formDiv);
       parentDiv.appendChild(formWrapper);
       //add event listeners to buttons
-      cancelFunction();
+      addFormBtnEvents();
     };
 
-    const cancelFunction = () => {
+    const addFormBtnEvents = () => {
       const cancelBtn = document.getElementById("cancelAddProject");
       cancelBtn.addEventListener("click", (e) => {
         //const projectForm = document.getElementById("projectNameForm");
@@ -128,6 +134,12 @@ const display = (() => {
         const formWrapper = document.querySelector(".form-wrapper");
         const parentDiv = document.getElementById("mainApp");
         parentDiv.removeChild(formWrapper);
+      });
+      const submitBtn = document.getElementById("projectNameForm");
+      submitBtn.addEventListener("submit", (e) => {
+        populateStorage(submitBtn);
+        submitBtn.reset();
+        e.preventDefault();
       });
     };
 
