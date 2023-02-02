@@ -1,6 +1,13 @@
 import { add } from "date-fns";
 import "./displayStyles.css";
-import { populateStorage } from "./storage.js";
+import { project } from "./project";
+import {
+  updateProjectStorage,
+  initStorage,
+  getProjectStorage,
+  getProjectsJSON,
+  getTasksJSON,
+} from "./storage.js";
 
 /*
 DOM Logic
@@ -11,6 +18,10 @@ const display = (() => {
     //show sidepane
     toggleSideNav();
     initBtns();
+    if (getProjectsJSON == null) {
+      initStorage();
+    }
+
     //add event listeners to all buttons
   };
 
@@ -22,6 +33,9 @@ const display = (() => {
     //Project plus button
     const addProjectBtn = document.getElementById("addProjects");
     addProjectBtn.addEventListener("click", addProject.addProjectForm);
+
+    const showProjectBtn = document.getElementById("showProjects");
+    showProjectBtn.addEventListener("click", showProjects);
   };
 
   //toggles SideNavPane
@@ -51,6 +65,9 @@ const display = (() => {
 
       todoNav.append(todoHeading, todayTodo, upcomingTodo);
 
+      const projectsWrapper = document.createElement("div");
+      projectsWrapper.classList.add("projects-wrapper");
+
       const projectsNav = document.createElement("div");
       projectsNav.classList.add("projects-heading-wrapper");
 
@@ -71,19 +88,22 @@ const display = (() => {
       const dropdownProjectsBtn = document.createElement("button");
       dropdownProjectsBtn.classList.add("showProjects");
       dropdownProjectsBtn.classList.add("btn");
+      dropdownProjectsBtn.id = "showProjects";
       dropdownProjectsBtn.innerHTML =
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>chevron-down</title><path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/></svg>';
 
       projectsBtnContainer.append(addProjectsBtn, dropdownProjectsBtn);
 
       projectsNav.append(projectsHeading, projectsBtnContainer);
-      sidePane.append(todoNav, projectsNav);
+      projectsWrapper.appendChild(projectsNav);
+      sidePane.append(todoNav, projectsWrapper);
       parentDiv.insertBefore(sidePane, parentDiv.firstChild);
     } else {
       parentDiv.removeChild(parentDiv.firstChild);
     }
   };
 
+  //Add Project DOM logic for showing form to add project
   const addProject = (() => {
     const addProjectForm = () => {
       const parentDiv = document.getElementById("mainApp");
@@ -127,19 +147,20 @@ const display = (() => {
 
     const addFormBtnEvents = () => {
       const cancelBtn = document.getElementById("cancelAddProject");
+      const formWrapper = document.querySelector(".form-wrapper");
+      const parentDiv = document.getElementById("mainApp");
       cancelBtn.addEventListener("click", (e) => {
         //const projectForm = document.getElementById("projectNameForm");
         //projectForm.reset();
         //e.preventDefault();
-        const formWrapper = document.querySelector(".form-wrapper");
-        const parentDiv = document.getElementById("mainApp");
         parentDiv.removeChild(formWrapper);
       });
       const submitBtn = document.getElementById("projectNameForm");
       submitBtn.addEventListener("submit", (e) => {
-        populateStorage(submitBtn);
+        updateProjectStorage(submitBtn);
         submitBtn.reset();
         e.preventDefault();
+        parentDiv.removeChild(formWrapper);
       });
     };
 
@@ -147,6 +168,18 @@ const display = (() => {
       addProjectForm,
     };
   })();
+
+  const showProjects = () => {
+    const projectArray = getProjectStorage();
+    const projectWrapper = document.querySelector(".projects-wrapper");
+    for (let i = 0; i < projectArray.length; i++) {
+      let tile = document.createElement("button");
+      tile.textContent = projectArray[i];
+      tile.classList.add("project-tile");
+      tile.classList.add("tile");
+      projectWrapper.appendChild(tile);
+    }
+  };
 
   return {
     initDisplay,

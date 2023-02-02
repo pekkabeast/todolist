@@ -67,6 +67,18 @@ body {
   padding-bottom: 0.5rem;
 }
 
+.projects-wrapper {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+}
+
+.project-tile {
+  width: 100%;
+  background-color: blue;
+  color: white;
+}
+
 .projects-heading-wrapper {
   display: flex;
   flex-flow: row nowrap;
