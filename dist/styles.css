@@ -81,6 +81,10 @@ body {
   width: 100%;
   background-color: blue;
   color: white;
+  padding: 0.3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .projects-heading-wrapper {

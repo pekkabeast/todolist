@@ -42,7 +42,13 @@ const initStorage = () => {
   }
 };
 
-const removeProjectStorage = () => {};
+const removeProjectStorage = (key) => {
+  const projectsArray = getProjectStorage();
+  if (projectsArray.indexOf(key) >= 0) {
+    projectsArray.splice(projectsArray.indexOf(key), 1);
+  }
+  localStorage.setItem("projects", JSON.stringify(projectsArray));
+};
 
 export {
   updateProjectStorage,
@@ -50,4 +56,5 @@ export {
   getProjectStorage,
   getProjectsJSON,
   getTasksJSON,
+  removeProjectStorage,
 };

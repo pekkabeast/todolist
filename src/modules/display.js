@@ -7,6 +7,7 @@ import {
   getProjectStorage,
   getProjectsJSON,
   getTasksJSON,
+  removeProjectStorage,
 } from "./storage.js";
 
 /*
@@ -93,7 +94,7 @@ const display = (() => {
       addProjectsBtn.classList.add("btn");
       addProjectsBtn.id = "addProjects";
       addProjectsBtn.innerHTML =
-        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><title>plus</title><path d='M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z' /></svg>";
+        "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><title>Add New Project</title><path d='M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z' /></svg>";
 
       const dropdownProjectsBtn = document.createElement("button");
       dropdownProjectsBtn.classList.add("showProjects");
@@ -167,6 +168,7 @@ const display = (() => {
       submitBtn.addEventListener("submit", (e) => {
         updateProjectStorage(submitBtn);
         displayNewProject();
+        deleteProjectBtn();
         submitBtn.reset();
         e.preventDefault();
         parentDiv.removeChild(formWrapper);
@@ -189,20 +191,44 @@ const display = (() => {
       tile.textContent = tileText;
       tile.classList.add("project-tile");
       tile.classList.add("tile");
+
+      const deleteProjectBtn = document.createElement("button");
+      deleteProjectBtn.classList.add("delete-tile-btn");
+      deleteProjectBtn.classList.add("btn");
+      deleteProjectBtn.innerHTML =
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>delete</title><path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg>';
+      tile.appendChild(deleteProjectBtn);
       tile.id = tileText;
       return tile;
+    };
+
+    const deleteProjectBtn = () => {
+      const projectTiles = document.querySelectorAll(".delete-tile-btn");
+      const projectTilesArray = [...projectTiles];
+      projectTilesArray.forEach((tile) => {
+        if (tile.getAttribute("data-deleteListener") != "true") {
+          tile.addEventListener("click", () => {
+            console.log(tile.parentElement.id);
+            removeProjectStorage(tile.parentElement.id);
+            tile.parentElement.parentElement.removeChild(
+              document.getElementById(tile.parentElement.id)
+            );
+          });
+          tile.setAttribute("data-deleteListener", true);
+        }
+      });
     };
 
     const toggleShowProjectsBtn = () => {
       const dropdownProjectsBtn = document.getElementById("showProjects");
       if (document.getElementById("project-btn-wrapper") == null) {
         dropdownProjectsBtn.innerHTML =
-          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>chevron-down</title><path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/></svg>';
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>Show Projects</title><path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/></svg>';
         dropdownProjectsBtn.removeEventListener("click", hideProjects);
         dropdownProjectsBtn.addEventListener("click", showProjects);
       } else {
         dropdownProjectsBtn.innerHTML =
-          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>chevron-left</title><path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>';
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>Hide Projects</title><path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>';
         dropdownProjectsBtn.removeEventListener("click", showProjects);
         dropdownProjectsBtn.addEventListener("click", hideProjects);
       }
@@ -221,6 +247,7 @@ const display = (() => {
       }
       projectWrapper.appendChild(buttonWrapper);
       toggleShowProjectsBtn();
+      deleteProjectBtn();
     };
 
     const hideProjects = () => {
