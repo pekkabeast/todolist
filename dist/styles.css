@@ -6,6 +6,7 @@
 html,
 body {
   height: 100%;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .pagewrapper {
@@ -16,7 +17,9 @@ body {
 
 .topbar {
   height: 44px;
-  background-color: pink;
+  background-color: rgb(219, 76, 63);
+  font-size: 0.8rem;
+  color: white;
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
@@ -44,9 +47,10 @@ body {
 /*Side Pane */
 .sidePane {
   width: 305px;
-  background-color: red;
+  background-color: #e5e7eb;
   padding: 1rem;
   box-sizing: border-box;
+  color: #374151;
 }
 
 .sidePane h2 {
@@ -89,8 +93,13 @@ body {
   display: flex;
 }
 
+.buttonWrapper {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
 .mainContent {
   height: 100%;
   width: 100%;
-  background-color: #d1d5db;
+  background-color: #f9fafb;
 }

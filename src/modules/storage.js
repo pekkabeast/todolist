@@ -36,8 +36,10 @@ const getTasksJSON = () => {
 };
 
 const initStorage = () => {
-  localStorage.setItem("tasks", JSON.stringify([]));
-  localStorage.setItem("projects", JSON.stringify([]));
+  if (getProjectsJSON() == null) {
+    localStorage.setItem("tasks", JSON.stringify([]));
+    localStorage.setItem("projects", JSON.stringify([]));
+  }
 };
 
 const removeProjectStorage = () => {};

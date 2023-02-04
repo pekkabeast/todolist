@@ -17,25 +17,16 @@ const display = (() => {
   const initDisplay = () => {
     //show sidepane
     toggleSideNav();
-    initBtns();
-    if (getProjectsJSON == null) {
-      initStorage();
-    }
+    initHeaderBtns();
+    initStorage();
 
     //add event listeners to all buttons
   };
 
-  const initBtns = () => {
+  const initHeaderBtns = () => {
     //Sandwich menu button
     const sandwichBtn = document.getElementById("sandwichNavBtn");
     sandwichBtn.addEventListener("click", toggleSideNav);
-
-    //Project plus button
-    const addProjectBtn = document.getElementById("addProjects");
-    addProjectBtn.addEventListener("click", addProject.addProjectForm);
-
-    const showProjectBtn = document.getElementById("showProjects");
-    showProjectBtn.addEventListener("click", showProjects);
   };
 
   //toggles SideNavPane
@@ -46,25 +37,44 @@ const display = (() => {
       sidePane.classList.add("sidePane");
       sidePane.id = "sidePane";
 
-      const todoNav = document.createElement("div");
-      todoNav.classList.add("todo-nav");
+      sidePane.append(
+        generateTodoNavContent(),
+        projectNavDom.generateProjectNavContent()
+      );
+      parentDiv.insertBefore(sidePane, parentDiv.firstChild);
+      projectNavDom.initProjectBtns();
+    } else {
+      parentDiv.removeChild(parentDiv.firstChild);
+    }
+  };
 
-      const todoHeading = document.createElement("h2");
-      todoHeading.classList.add("nav-heading");
-      todoHeading.textContent = "To-do List";
+  const generateTodoNavContent = () => {
+    const todoNav = document.createElement("div");
+    todoNav.classList.add("todo-nav");
 
-      const todayTodo = document.createElement("button");
-      todayTodo.classList.add("tile");
-      todayTodo.id = "today";
-      todayTodo.textContent = "Today";
+    const todoHeading = document.createElement("h2");
+    todoHeading.classList.add("nav-heading");
+    todoHeading.textContent = "To-do List";
 
-      const upcomingTodo = document.createElement("button");
-      upcomingTodo.classList.add("tile");
-      upcomingTodo.id = "upcoming";
-      upcomingTodo.textContent = "Upcoming";
+    const todayTodo = document.createElement("button");
+    todayTodo.classList.add("tile");
+    todayTodo.id = "today";
+    todayTodo.textContent = "Today";
 
-      todoNav.append(todoHeading, todayTodo, upcomingTodo);
+    const upcomingTodo = document.createElement("button");
+    upcomingTodo.classList.add("tile");
+    upcomingTodo.id = "upcoming";
+    upcomingTodo.textContent = "Upcoming";
 
+    todoNav.append(todoHeading, todayTodo, upcomingTodo);
+
+    return todoNav;
+  };
+
+  //Add Project DOM logic for showing form to add project
+  const projectNavDom = (() => {
+    const generateProjectNavContent = () => {
+      //Nav for projects
       const projectsWrapper = document.createElement("div");
       projectsWrapper.classList.add("projects-wrapper");
 
@@ -89,22 +99,20 @@ const display = (() => {
       dropdownProjectsBtn.classList.add("showProjects");
       dropdownProjectsBtn.classList.add("btn");
       dropdownProjectsBtn.id = "showProjects";
-      dropdownProjectsBtn.innerHTML =
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>chevron-down</title><path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/></svg>';
 
       projectsBtnContainer.append(addProjectsBtn, dropdownProjectsBtn);
-
       projectsNav.append(projectsHeading, projectsBtnContainer);
       projectsWrapper.appendChild(projectsNav);
-      sidePane.append(todoNav, projectsWrapper);
-      parentDiv.insertBefore(sidePane, parentDiv.firstChild);
-    } else {
-      parentDiv.removeChild(parentDiv.firstChild);
-    }
-  };
 
-  //Add Project DOM logic for showing form to add project
-  const addProject = (() => {
+      return projectsWrapper;
+    };
+
+    const initProjectBtns = () => {
+      const addProjectBtn = document.getElementById("addProjects");
+      addProjectBtn.addEventListener("click", projectNavDom.addProjectForm);
+      toggleShowProjectsBtn();
+    };
+
     const addProjectForm = () => {
       const parentDiv = document.getElementById("mainApp");
       const formWrapper = document.createElement("div");
@@ -158,28 +166,78 @@ const display = (() => {
       const submitBtn = document.getElementById("projectNameForm");
       submitBtn.addEventListener("submit", (e) => {
         updateProjectStorage(submitBtn);
+        displayNewProject();
         submitBtn.reset();
         e.preventDefault();
         parentDiv.removeChild(formWrapper);
       });
+      const displayNewProject = () => {
+        const btnWrapper = document.getElementById("project-btn-wrapper");
+        if (btnWrapper != null) {
+          const projectArray = getProjectStorage();
+          for (let i = 0; i < projectArray.length; i++) {
+            if (document.getElementById(projectArray[i]) == null) {
+              btnWrapper.appendChild(projectTileElement(projectArray[i]));
+            }
+          }
+        }
+      };
+    };
+
+    const projectTileElement = (tileText) => {
+      const tile = document.createElement("div");
+      tile.textContent = tileText;
+      tile.classList.add("project-tile");
+      tile.classList.add("tile");
+      tile.id = tileText;
+      return tile;
+    };
+
+    const toggleShowProjectsBtn = () => {
+      const dropdownProjectsBtn = document.getElementById("showProjects");
+      if (document.getElementById("project-btn-wrapper") == null) {
+        dropdownProjectsBtn.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>chevron-down</title><path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/></svg>';
+        dropdownProjectsBtn.removeEventListener("click", hideProjects);
+        dropdownProjectsBtn.addEventListener("click", showProjects);
+      } else {
+        dropdownProjectsBtn.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>chevron-left</title><path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>';
+        dropdownProjectsBtn.removeEventListener("click", showProjects);
+        dropdownProjectsBtn.addEventListener("click", hideProjects);
+      }
+    };
+
+    const showProjects = () => {
+      const projectArray = getProjectStorage();
+      const projectWrapper = document.querySelector(".projects-wrapper");
+      const buttonWrapper = document.createElement("div");
+      buttonWrapper.id = "project-btn-wrapper";
+      buttonWrapper.classList.add("button-wrapper");
+      for (let i = 0; i < projectArray.length; i++) {
+        if (document.getElementById(projectArray[i]) == null) {
+          buttonWrapper.appendChild(projectTileElement(projectArray[i]));
+        }
+      }
+      projectWrapper.appendChild(buttonWrapper);
+      toggleShowProjectsBtn();
+    };
+
+    const hideProjects = () => {
+      const projectWrapper = document.querySelector(".projects-wrapper");
+      const buttonWrapper = document.getElementById("project-btn-wrapper");
+
+      projectWrapper.removeChild(buttonWrapper);
+      toggleShowProjectsBtn();
     };
 
     return {
       addProjectForm,
+      toggleShowProjectsBtn,
+      generateProjectNavContent,
+      initProjectBtns,
     };
   })();
-
-  const showProjects = () => {
-    const projectArray = getProjectStorage();
-    const projectWrapper = document.querySelector(".projects-wrapper");
-    for (let i = 0; i < projectArray.length; i++) {
-      let tile = document.createElement("button");
-      tile.textContent = projectArray[i];
-      tile.classList.add("project-tile");
-      tile.classList.add("tile");
-      projectWrapper.appendChild(tile);
-    }
-  };
 
   return {
     initDisplay,
