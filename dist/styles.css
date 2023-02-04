@@ -59,6 +59,8 @@ body {
 
 .tile {
   margin: 0.5rem 0 0.5rem 0;
+  transition: 0.2s;
+  box-sizing: border-box;
 }
 
 .todo-nav {
@@ -79,12 +81,24 @@ body {
 
 .project-tile {
   width: 100%;
-  background-color: blue;
-  color: white;
+  background-color: transparent;
+  color: #374151;
   padding: 0.3rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-radius: 5px;
+}
+
+.tile:hover {
+  background-color: #374151;
+  color: white;
+  cursor: pointer;
+}
+
+.tile:hover > .delete-tile-btn {
+  display: flex;
+  cursor: pointer;
 }
 
 .projects-heading-wrapper {
@@ -106,4 +120,13 @@ body {
   height: 100%;
   width: 100%;
   background-color: #f9fafb;
+}
+
+.delete-tile-btn {
+  display: none;
+  width: 19px;
+  height: 19px;
+  transition: 0s;
+  background-color: transparent;
+  border: none;
 }
