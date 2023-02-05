@@ -20,6 +20,7 @@ const display = (() => {
     toggleSideNav();
     initHeaderBtns();
     initStorage();
+    mainContentDom.showProjectContent(1);
 
     //add event listeners to all buttons
   };
@@ -169,6 +170,7 @@ const display = (() => {
         updateProjectStorage(submitBtn);
         displayNewProject();
         deleteProjectBtn();
+        showProjectContentBtn();
         submitBtn.reset();
         e.preventDefault();
         parentDiv.removeChild(formWrapper);
@@ -202,6 +204,19 @@ const display = (() => {
       return tile;
     };
 
+    const showProjectContentBtn = () => {
+      const projectBtns = document.querySelectorAll(".project-tile");
+      projectBtns.forEach((button) => {
+        if (button.getAttribute("data-showProject") != "true") {
+          button.addEventListener("click", (e) => {
+            mainContentDom.showProjectContent(e);
+          });
+          button.setAttribute("data-showProject", "true");
+        }
+      });
+    };
+
+    //Need to add logic to always keep at least 1 project
     const deleteProjectBtn = () => {
       const projectTiles = document.querySelectorAll(".delete-tile-btn");
       const projectTilesArray = [...projectTiles];
@@ -247,6 +262,7 @@ const display = (() => {
       }
       projectWrapper.appendChild(buttonWrapper);
       toggleShowProjectsBtn();
+      showProjectContentBtn();
       deleteProjectBtn();
     };
 
@@ -267,9 +283,103 @@ const display = (() => {
   })();
 
   const mainContentDom = (() => {
-    const showProjectContent = () => {};
+    const showProjectContent = (projectBtnPressed) => {
+      const parentDiv = document.querySelector(".mainContent");
+      parentDiv.appendChild(
+        mainContentTemplate(1 /*projectBtnPressed.target.id*/)
+      );
+    };
+
+    const mainContentTemplate = (title) => {
+      const contentWrapper = document.createElement("div");
+      const contentTitle = document.createElement("h1");
+      contentTitle.textContent = title;
+      //Show Tasks
+
+      //create new task button
+      contentWrapper.append(contentTitle, tasksDom.taskFormExpanded());
+
+      return contentWrapper;
+    };
+
     const showTodayContent = () => {};
     const showUpcomingContent = () => {};
+
+    return { showProjectContent };
+  })();
+
+  const tasksDom = (() => {
+    const taskFormExpanded = () => {
+      const formWrapper = document.createElement("div");
+      formWrapper.classList.add("taskForm-wrapper");
+      const taskGenerateForm = document.createElement("form");
+      taskGenerateForm.classList.add("taskForm-expanded");
+      taskGenerateForm.id = "newTaskForm";
+      const taskNameInput = document.createElement("input");
+      taskNameInput.type = "text";
+      taskNameInput.id = "taskName";
+      taskNameInput.placeholder = "Task name";
+      const taskDescInput = document.createElement("textarea");
+      taskDescInput.id = "taskDesc";
+      taskDescInput.maxLength = 350;
+      taskDescInput.placeholder = "Description (350 chars max)";
+      //Categories
+      const taskCategoryWrapper = document.createElement("div");
+      taskCategoryWrapper.id = "taskCategory-wrapper";
+      const taskDueDateInput = document.createElement("input");
+      taskDueDateInput.type = "date";
+      taskDueDateInput.id = "taskDueDate";
+      taskDueDateInput.placeholder = "Due Date";
+
+      const taskPriorityInput = document.createElement("select");
+      taskPriorityInput.id = "taskPriority";
+
+      const lowPriority = document.createElement("option");
+      lowPriority.value = "low";
+      lowPriority.textContent = "Low";
+
+      const medPriorty = document.createElement("option");
+      medPriorty.value = "med";
+      medPriorty.textContent = "Medium";
+
+      const highPriorty = document.createElement("option");
+      highPriorty.value = "high";
+      highPriorty.textContent = "High";
+
+      taskPriorityInput.append(highPriorty, medPriorty, lowPriority);
+
+      taskCategoryWrapper.append(
+        taskDueDateInput,
+        taskPriorityInput,
+        dropDownProjects()
+      );
+      taskGenerateForm.append(
+        taskNameInput,
+        taskDescInput,
+        taskCategoryWrapper
+      );
+      formWrapper.appendChild(taskGenerateForm);
+
+      return formWrapper;
+    };
+
+    const dropDownProjects = () => {
+      const projectArray = getProjectStorage();
+      const projectDropDown = document.createElement("select");
+      projectDropDown.classList.add("project-dropdown");
+      projectDropDown.id = "project-dropdown";
+      projectArray.forEach((project) => {
+        let projectOption = document.createElement("option");
+        projectOption.textContent = project;
+        projectOption.value = project;
+        projectDropDown.appendChild(projectOption);
+      });
+      return projectDropDown;
+    };
+
+    return {
+      taskFormExpanded,
+    };
   })();
 
   return {

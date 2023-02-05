@@ -120,6 +120,8 @@ body {
   height: 100%;
   width: 100%;
   background-color: #f9fafb;
+  display: flex;
+  flex-flow: column nowrap;
 }
 
 .delete-tile-btn {
@@ -129,4 +131,45 @@ body {
   transition: 0s;
   background-color: transparent;
   border: none;
+}
+
+/*Task Form CSS */
+.taskForm-wrapper {
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 0.2rem;
+}
+
+.taskForm-expanded {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+#taskDueDate,
+#taskPriority,
+#project-dropdown {
+  width: 130px;
+  min-width: 130px;
+}
+
+#taskName {
+  font-size: 1rem;
+  border: none;
+  margin: 0.2rem;
+}
+
+#taskName:focus,
+#taskDesc:focus {
+  outline: none;
+}
+
+#taskDesc {
+  border: none;
+  margin: 0.2rem;
+  resize: none;
+  height: 4rem;
+}
+
+#taskCategory-wrapper {
+  margin: 0.2rem;
 }
