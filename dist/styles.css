@@ -122,6 +122,7 @@ body {
   background-color: #f9fafb;
   display: flex;
   flex-flow: column nowrap;
+  padding: 1rem;
 }
 
 .delete-tile-btn {
@@ -147,7 +148,7 @@ body {
 
 #taskDueDate,
 #taskPriority,
-#project-dropdown {
+#taskProject {
   width: 130px;
   min-width: 130px;
 }
@@ -172,4 +173,26 @@ body {
 
 #taskCategory-wrapper {
   margin: 0.2rem;
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.addtask-btn {
+  width: 6rem;
+  border-radius: 4px;
+  padding: 0.2rem;
+}
+
+.addtask-btn:hover {
+  background-color: lightgray;
+}
+
+.content-title {
+  margin-bottom: 1rem;
+}
+
+.tasksubmit-btn {
+  padding: 0.1rem;
+  color: green;
+  margin-left: auto;
 }

@@ -9,6 +9,7 @@ import {
   getTasksJSON,
   removeProjectStorage,
 } from "./storage.js";
+import { createNewTask } from "./mainApp";
 
 /*
 DOM Logic
@@ -286,18 +287,23 @@ const display = (() => {
     const showProjectContent = (projectBtnPressed) => {
       const parentDiv = document.querySelector(".mainContent");
       parentDiv.appendChild(
-        mainContentTemplate(1 /*projectBtnPressed.target.id*/)
+        mainContentTemplate("Project 1" /*projectBtnPressed.target.id*/)
       );
+
+      tasksDom.addTaskBtnFunc();
     };
 
     const mainContentTemplate = (title) => {
       const contentWrapper = document.createElement("div");
+      contentWrapper.classList.add("content-wrapper");
       const contentTitle = document.createElement("h1");
+      contentTitle.classList.add("content-title");
       contentTitle.textContent = title;
-      //Show Tasks
 
       //create new task button
-      contentWrapper.append(contentTitle, tasksDom.taskFormExpanded());
+      contentWrapper.append(contentTitle, tasksDom.addTaskBtn());
+
+      //Show Tasks
 
       return contentWrapper;
     };
@@ -309,6 +315,22 @@ const display = (() => {
   })();
 
   const tasksDom = (() => {
+    const addTaskBtn = () => {
+      const taskbutton = document.createElement("div");
+      taskbutton.textContent = "+ Add Task";
+      taskbutton.classList.add("addtask-btn");
+      return taskbutton;
+    };
+
+    const addTaskBtnFunc = () => {
+      const taskbutton = document.querySelector(".addtask-btn");
+      taskbutton.addEventListener("click", () => {
+        taskbutton.parentElement.insertBefore(taskFormExpanded(), taskbutton);
+        addTaskFormSubmitEvent();
+        taskbutton.parentElement.removeChild(taskbutton);
+      });
+    };
+
     const taskFormExpanded = () => {
       const formWrapper = document.createElement("div");
       formWrapper.classList.add("taskForm-wrapper");
@@ -348,10 +370,16 @@ const display = (() => {
 
       taskPriorityInput.append(highPriorty, medPriorty, lowPriority);
 
+      const taskSubmitBtn = document.createElement("input");
+      taskSubmitBtn.classList.add("tasksubmit-btn");
+      taskSubmitBtn.type = "submit";
+      taskSubmitBtn.value = "Create Task";
+
       taskCategoryWrapper.append(
         taskDueDateInput,
         taskPriorityInput,
-        dropDownProjects()
+        dropDownProjects(),
+        taskSubmitBtn
       );
       taskGenerateForm.append(
         taskNameInput,
@@ -363,11 +391,40 @@ const display = (() => {
       return formWrapper;
     };
 
+    const hideTaskForm = () => {
+      const taskForm = document.querySelector(".taskForm-wrapper");
+      taskForm.parentElement.insertBefore(addTaskBtn(), taskForm);
+      addTaskBtnFunc();
+      taskForm.parentElement.removeChild(taskForm);
+    };
+
+    const addTaskFormSubmitEvent = () => {
+      const addTaskForm = document.getElementById("newTaskForm");
+      const taskName = document.getElementById("taskName");
+      const taskDesc = document.getElementById("taskDesc");
+      const taskDueDate = document.getElementById("taskDueDate");
+      const taskPriority = document.getElementById("taskPriority");
+      const taskProject = document.getElementById("taskProject");
+      addTaskForm.addEventListener("submit", (e) => {
+        createNewTask(
+          taskName.value,
+          taskDesc.value,
+          taskDueDate.value,
+          taskPriority.value,
+          taskProject.value
+        );
+
+        addTaskForm.reset();
+        e.preventDefault();
+        hideTaskForm();
+      });
+    };
+
     const dropDownProjects = () => {
       const projectArray = getProjectStorage();
       const projectDropDown = document.createElement("select");
       projectDropDown.classList.add("project-dropdown");
-      projectDropDown.id = "project-dropdown";
+      projectDropDown.id = "taskProject";
       projectArray.forEach((project) => {
         let projectOption = document.createElement("option");
         projectOption.textContent = project;
@@ -377,8 +434,16 @@ const display = (() => {
       return projectDropDown;
     };
 
+    const taskFormHandler = () => {
+      //when user fills out ask form, it should take away the add task form
+      //it should create a new task and update the storage
+      //it should display the new task created in abbreviated form
+    };
+
     return {
+      addTaskBtn,
       taskFormExpanded,
+      addTaskBtnFunc,
     };
   })();
 
