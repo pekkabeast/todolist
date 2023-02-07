@@ -21,7 +21,7 @@ const display = (() => {
     toggleSideNav();
     initHeaderBtns();
     initStorage();
-    mainContentDom.showProjectContent(1);
+    projectNavDom.initDefaultProject();
 
     //add event listeners to all buttons
   };
@@ -76,6 +76,11 @@ const display = (() => {
 
   //Add Project DOM logic for showing form to add project
   const projectNavDom = (() => {
+    const initDefaultProject = () => {
+      updateProjectStorage("Default Project");
+      displayNewProject();
+    };
+
     const generateProjectNavContent = () => {
       //Nav for projects
       const projectsWrapper = document.createElement("div");
@@ -168,7 +173,7 @@ const display = (() => {
       });
       const submitBtn = document.getElementById("projectNameForm");
       submitBtn.addEventListener("submit", (e) => {
-        updateProjectStorage(submitBtn);
+        updateProjectStorage(submitBtn.elements["projectName"].value);
         displayNewProject();
         deleteProjectBtn();
         showProjectContentBtn();
@@ -176,17 +181,18 @@ const display = (() => {
         e.preventDefault();
         parentDiv.removeChild(formWrapper);
       });
-      const displayNewProject = () => {
-        const btnWrapper = document.getElementById("project-btn-wrapper");
-        if (btnWrapper != null) {
-          const projectArray = getProjectStorage();
-          for (let i = 0; i < projectArray.length; i++) {
-            if (document.getElementById(projectArray[i]) == null) {
-              btnWrapper.appendChild(projectTileElement(projectArray[i]));
-            }
+    };
+
+    const displayNewProject = () => {
+      const btnWrapper = document.getElementById("project-btn-wrapper");
+      if (btnWrapper != null) {
+        const projectArray = getProjectStorage();
+        for (let i = 0; i < projectArray.length; i++) {
+          if (document.getElementById(projectArray[i]) == null) {
+            btnWrapper.appendChild(projectTileElement(projectArray[i]));
           }
         }
-      };
+      }
     };
 
     const projectTileElement = (tileText) => {
@@ -194,13 +200,14 @@ const display = (() => {
       tile.textContent = tileText;
       tile.classList.add("project-tile");
       tile.classList.add("tile");
-
-      const deleteProjectBtn = document.createElement("button");
-      deleteProjectBtn.classList.add("delete-tile-btn");
-      deleteProjectBtn.classList.add("btn");
-      deleteProjectBtn.innerHTML =
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill = "white"><title>delete</title><path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg>';
-      tile.appendChild(deleteProjectBtn);
+      if (tileText != "Default Project") {
+        const deleteProjectBtn = document.createElement("button");
+        deleteProjectBtn.classList.add("delete-tile-btn");
+        deleteProjectBtn.classList.add("btn");
+        deleteProjectBtn.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill = "white"><title>delete</title><path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg>';
+        tile.appendChild(deleteProjectBtn);
+      }
       tile.id = tileText;
       return tile;
     };
@@ -280,15 +287,16 @@ const display = (() => {
       toggleShowProjectsBtn,
       generateProjectNavContent,
       initProjectBtns,
+      initDefaultProject,
     };
   })();
 
   const mainContentDom = (() => {
     const showProjectContent = (projectBtnPressed) => {
       const parentDiv = document.querySelector(".mainContent");
-      parentDiv.appendChild(
-        mainContentTemplate("Project 1" /*projectBtnPressed.target.id*/)
-      );
+      if (document.querySelector(".content-wrapper") == null) {
+        parentDiv.appendChild(mainContentTemplate(projectBtnPressed.target.id));
+      }
 
       tasksDom.addTaskBtnFunc();
     };
@@ -370,6 +378,11 @@ const display = (() => {
 
       taskPriorityInput.append(highPriorty, medPriorty, lowPriority);
 
+      const cancelBtn = document.createElement("button");
+      cancelBtn.textContent = "Cancel";
+      cancelBtn.id = "cancelAddTask";
+      cancelBtn.classList.add("cancel-task-btn");
+
       const taskSubmitBtn = document.createElement("input");
       taskSubmitBtn.classList.add("tasksubmit-btn");
       taskSubmitBtn.type = "submit";
@@ -379,6 +392,7 @@ const display = (() => {
         taskDueDateInput,
         taskPriorityInput,
         dropDownProjects(),
+        cancelBtn,
         taskSubmitBtn
       );
       taskGenerateForm.append(
@@ -416,6 +430,15 @@ const display = (() => {
 
         addTaskForm.reset();
         e.preventDefault();
+        hideTaskForm();
+      });
+    };
+
+    const addTaskFormCancelEvent = () => {
+      const cancelBtn = document.getElementById("cancelAddTask");
+      const addTaskForm = document.getElementById("newTaskForm");
+      cancelBtn.addEventListener("click", () => {
+        addTaskForm.reset();
         hideTaskForm();
       });
     };

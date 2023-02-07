@@ -194,5 +194,14 @@ body {
 .tasksubmit-btn {
   padding: 0.1rem;
   color: green;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  width: 5rem;
+}
+
+.cancel-task-btn {
+  padding: 0.1rem;
+  color: red;
   margin-left: auto;
+  width: 5rem;
 }

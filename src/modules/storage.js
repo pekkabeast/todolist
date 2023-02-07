@@ -16,13 +16,11 @@ const initStorage = () => {
 //add new project name into project array in local storage
 //if duplicate, console logs for now
 const updateProjectStorage = (name) => {
-  const projectName = name.elements["projectName"].value;
+  const projectName = name;
   let projectArray = JSON.parse(localStorage.getItem("projects"));
   if (!projectArray.includes(projectName)) {
     projectArray.push(projectName);
     localStorage.setItem("projects", JSON.stringify(projectArray));
-  } else {
-    console.log("Duplicate");
   }
 };
 
