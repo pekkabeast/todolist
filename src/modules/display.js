@@ -296,6 +296,14 @@ const display = (() => {
       const parentDiv = document.querySelector(".mainContent");
       if (document.querySelector(".content-wrapper") == null) {
         parentDiv.appendChild(mainContentTemplate(projectBtnPressed.target.id));
+      } else if (
+        document.querySelector(".content-wrapper").firstChild.id !=
+        projectBtnPressed.target.id
+      ) {
+        while (parentDiv.firstChild) {
+          parentDiv.removeChild(parentDiv.lastChild);
+        }
+        parentDiv.appendChild(mainContentTemplate(projectBtnPressed.target.id));
       }
 
       tasksDom.addTaskBtnFunc();
@@ -335,6 +343,7 @@ const display = (() => {
       taskbutton.addEventListener("click", () => {
         taskbutton.parentElement.insertBefore(taskFormExpanded(), taskbutton);
         addTaskFormSubmitEvent();
+        addTaskFormCancelEvent();
         taskbutton.parentElement.removeChild(taskbutton);
       });
     };
@@ -437,9 +446,10 @@ const display = (() => {
     const addTaskFormCancelEvent = () => {
       const cancelBtn = document.getElementById("cancelAddTask");
       const addTaskForm = document.getElementById("newTaskForm");
-      cancelBtn.addEventListener("click", () => {
+      cancelBtn.addEventListener("click", (e) => {
         addTaskForm.reset();
         hideTaskForm();
+        e.preventDefault();
       });
     };
 
