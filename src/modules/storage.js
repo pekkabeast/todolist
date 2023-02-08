@@ -75,7 +75,6 @@ const removeTaskStorage = (task) => {
     (taskStorage) => !_.isEqual(task, taskStorage)
   );
   localStorage.setItem("tasks", JSON.stringify(newArray));
-  console.log("removed");
 };
 
 export {

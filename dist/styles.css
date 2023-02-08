@@ -235,3 +235,12 @@ body {
   top: -6px;
   left: -2px;
 }
+
+.error-msg {
+  position: absolute;
+  color: red;
+}
+
+.content-wrapper {
+  position: relative;
+}

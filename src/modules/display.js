@@ -11,7 +11,7 @@ import {
   getTaskStorage,
   removeTaskStorage,
 } from "./storage.js";
-import { createNewTask } from "./mainApp";
+import { createNewTask, checkExistingTask } from "./mainApp";
 
 /*
 DOM Logic
@@ -433,21 +433,48 @@ const display = (() => {
       const taskPriority = document.getElementById("taskPriority");
       const taskProject = document.querySelector(".content-title");
       addTaskForm.addEventListener("submit", (e) => {
-        createNewTask(
-          taskName.value,
-          taskDesc.value,
-          taskDueDate.value,
-          taskPriority.value,
-          taskProject.textContent
-        );
+        if (
+          checkExistingTask(
+            taskName.value,
+            taskDesc.value,
+            taskDueDate.value,
+            taskPriority.value,
+            taskProject.textContent
+          )
+        ) {
+          createNewTask(
+            taskName.value,
+            taskDesc.value,
+            taskDueDate.value,
+            taskPriority.value,
+            taskProject.textContent
+          );
+          updateProjectTasks(
+            document.querySelector(".content-title").textContent
+          );
+          addTaskForm.reset();
+          hideTaskForm();
+        } else {
+          if (document.querySelector(".error-msg") == null) {
+            duplicateTaskPrompt();
+            setTimeout(function () {
+              const errormsg = document.querySelector(".error-msg");
+              if (errormsg != null) {
+                errormsg.parentElement.removeChild(errormsg);
+              }
+            }, 3000);
+          }
+        }
 
-        addTaskForm.reset();
         e.preventDefault();
-        updateProjectTasks(
-          document.querySelector(".content-title").textContent
-        );
-        hideTaskForm();
       });
+    };
+    const duplicateTaskPrompt = () => {
+      const taskForm = document.querySelector(".taskForm-wrapper");
+      const errormsg = document.createElement("div");
+      errormsg.textContent = "Task already created. Create a new one!";
+      errormsg.classList.add("error-msg");
+      taskForm.parentElement.insertBefore(errormsg, taskForm.nextSibling);
     };
 
     const addTaskFormCancelEvent = () => {
@@ -456,6 +483,10 @@ const display = (() => {
       cancelBtn.addEventListener("click", (e) => {
         addTaskForm.reset();
         hideTaskForm();
+        if (document.querySelector(".error-msg") != null) {
+          const errormsg = document.querySelector(".error-msg");
+          errormsg.parentElement.removeChild(errormsg);
+        }
         e.preventDefault();
       });
     };
@@ -464,9 +495,12 @@ const display = (() => {
     const addTaskCompleteEvent = () => {
       const completeBtns = document.querySelectorAll(".complete-btn");
 
-      completeBtns.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          removeTaskStorage(btn.parentElement.taskObject);
+      completeBtns.forEach((completebtn) => {
+        completebtn.addEventListener("click", () => {
+          removeTaskStorage(completebtn.parentElement.taskObject);
+          updateProjectTasks(
+            document.querySelector(".content-title").textContent
+          );
         });
       });
     };
@@ -493,12 +527,14 @@ const display = (() => {
 
     const updateProjectTasks = (projectTitle) => {
       const taskWrapper = document.querySelector(".task-wrapper");
-
+      while (taskWrapper.firstChild) {
+        taskWrapper.removeChild(taskWrapper.lastChild);
+      }
       const taskArray = getTaskStorage();
       const projectTasks = taskArray.filter(
         (task) => task.project == projectTitle
       );
-      console.log(projectTasks);
+
       projectTasks.forEach((task) => {
         if (
           document.querySelector(
@@ -508,6 +544,8 @@ const display = (() => {
           taskWrapper.appendChild(createTaskTile(task));
         }
       });
+
+      addTaskCompleteEvent();
     };
 
     const showProjectTasks = (projectTitle) => {
