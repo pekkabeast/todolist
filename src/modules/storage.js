@@ -1,5 +1,6 @@
 import { project } from "./project.js";
 import { tasks } from "./task.js";
+import _ from "lodash";
 /*
 initStorage if first time on page
 
@@ -68,6 +69,15 @@ const getTaskStorage = () => {
   return taskArray;
 };
 
+const removeTaskStorage = (task) => {
+  const taskArray = getTaskStorage();
+  const newArray = taskArray.filter(
+    (taskStorage) => !_.isEqual(task, taskStorage)
+  );
+  localStorage.setItem("tasks", JSON.stringify(newArray));
+  console.log("removed");
+};
+
 export {
   updateProjectStorage,
   initStorage,
@@ -77,4 +87,5 @@ export {
   removeProjectStorage,
   updateTaskStorage,
   getTaskStorage,
+  removeTaskStorage,
 };

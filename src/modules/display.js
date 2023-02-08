@@ -8,6 +8,8 @@ import {
   getProjectsJSON,
   getTasksJSON,
   removeProjectStorage,
+  getTaskStorage,
+  removeTaskStorage,
 } from "./storage.js";
 import { createNewTask } from "./mainApp";
 
@@ -307,6 +309,7 @@ const display = (() => {
       }
 
       tasksDom.addTaskBtnFunc();
+      tasksDom.addTaskCompleteEvent();
     };
 
     const mainContentTemplate = (title) => {
@@ -320,6 +323,7 @@ const display = (() => {
       contentWrapper.append(contentTitle, tasksDom.addTaskBtn());
 
       //Show Tasks
+      contentWrapper.appendChild(tasksDom.showProjectTasks(title));
 
       return contentWrapper;
     };
@@ -400,7 +404,7 @@ const display = (() => {
       taskCategoryWrapper.append(
         taskDueDateInput,
         taskPriorityInput,
-        dropDownProjects(),
+        //dropDownProjects(),
         cancelBtn,
         taskSubmitBtn
       );
@@ -427,18 +431,21 @@ const display = (() => {
       const taskDesc = document.getElementById("taskDesc");
       const taskDueDate = document.getElementById("taskDueDate");
       const taskPriority = document.getElementById("taskPriority");
-      const taskProject = document.getElementById("taskProject");
+      const taskProject = document.querySelector(".content-title");
       addTaskForm.addEventListener("submit", (e) => {
         createNewTask(
           taskName.value,
           taskDesc.value,
           taskDueDate.value,
           taskPriority.value,
-          taskProject.value
+          taskProject.textContent
         );
 
         addTaskForm.reset();
         e.preventDefault();
+        updateProjectTasks(
+          document.querySelector(".content-title").textContent
+        );
         hideTaskForm();
       });
     };
@@ -450,6 +457,17 @@ const display = (() => {
         addTaskForm.reset();
         hideTaskForm();
         e.preventDefault();
+      });
+    };
+
+    //duplicate tasks will be all removed if one of them is completed
+    const addTaskCompleteEvent = () => {
+      const completeBtns = document.querySelectorAll(".complete-btn");
+
+      completeBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          removeTaskStorage(btn.parentElement.taskObject);
+        });
       });
     };
 
@@ -473,10 +491,67 @@ const display = (() => {
       //it should display the new task created in abbreviated form
     };
 
+    const updateProjectTasks = (projectTitle) => {
+      const taskWrapper = document.querySelector(".task-wrapper");
+
+      const taskArray = getTaskStorage();
+      const projectTasks = taskArray.filter(
+        (task) => task.project == projectTitle
+      );
+      console.log(projectTasks);
+      projectTasks.forEach((task) => {
+        if (
+          document.querySelector(
+            `[data-taskObject='${JSON.stringify(task)}']`
+          ) == null
+        ) {
+          taskWrapper.appendChild(createTaskTile(task));
+        }
+      });
+    };
+
+    const showProjectTasks = (projectTitle) => {
+      const taskWrapper = document.createElement("div");
+      taskWrapper.classList.add("task-wrapper");
+      const taskArray = getTaskStorage();
+      const projectTasks = taskArray.filter(
+        (task) => task.project == projectTitle
+      );
+
+      projectTasks.forEach((task) => {
+        if (
+          document.querySelector(
+            `[data-taskObject='${JSON.stringify(task)}']`
+          ) == null
+        ) {
+          taskWrapper.appendChild(createTaskTile(task));
+        }
+      });
+      return taskWrapper;
+    };
+
+    const createTaskTile = (task) => {
+      const taskTile = document.createElement("div");
+      taskTile.classList.add("task-tile");
+      const completebtn = document.createElement("div");
+      completebtn.classList.add("complete-btn");
+      const taskTitle = document.createElement("div");
+      const taskDueDate = document.createElement("div");
+      taskTitle.textContent = task.title;
+      taskDueDate.textContent = task.dueDate;
+      taskTile.append(completebtn, taskTitle, taskDueDate);
+      taskTile.taskObject = task;
+      taskTile.setAttribute("data-taskObject", JSON.stringify(task));
+
+      return taskTile;
+    };
+
     return {
       addTaskBtn,
       taskFormExpanded,
       addTaskBtnFunc,
+      showProjectTasks,
+      addTaskCompleteEvent,
     };
   })();
 
