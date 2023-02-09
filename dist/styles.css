@@ -61,6 +61,7 @@ body {
   margin: 0.5rem 0 0.5rem 0;
   transition: 0.2s;
   box-sizing: border-box;
+  transition: background-color 0.3s;
 }
 
 .todo-nav {
@@ -79,7 +80,8 @@ body {
   justify-content: flex-start;
 }
 
-.project-tile {
+.project-tile,
+.todo-tile {
   width: 100%;
   background-color: transparent;
   color: #374151;
@@ -211,11 +213,15 @@ body {
 }
 
 .task-tile {
-  padding: 1rem;
+  padding: 0.7rem;
   border-bottom: 1px solid lightgray;
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  margin-bottom: 0.2rem;
+  transition: background-color 0.1s;
 }
 
 .complete-btn {
@@ -243,4 +249,12 @@ body {
 
 .content-wrapper {
   position: relative;
+}
+
+.task-tile:hover {
+  background-color: lightgray;
+}
+
+.task-due-date {
+  margin-left: auto;
 }

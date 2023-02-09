@@ -1,4 +1,4 @@
-import { add } from "date-fns";
+import { add, format } from "date-fns";
 import "./displayStyles.css";
 import { project } from "./project";
 import {
@@ -24,6 +24,7 @@ const display = (() => {
     initHeaderBtns();
     initStorage();
     projectNavDom.initDefaultProject();
+    mainContentDom.showTodayContent();
 
     //add event listeners to all buttons
   };
@@ -61,13 +62,15 @@ const display = (() => {
     todoHeading.classList.add("nav-heading");
     todoHeading.textContent = "To-do List";
 
-    const todayTodo = document.createElement("button");
+    const todayTodo = document.createElement("div");
     todayTodo.classList.add("tile");
+    todayTodo.classList.add("todo-tile");
     todayTodo.id = "today";
     todayTodo.textContent = "Today";
 
-    const upcomingTodo = document.createElement("button");
+    const upcomingTodo = document.createElement("div");
     upcomingTodo.classList.add("tile");
+    upcomingTodo.classList.add("todo-tile");
     upcomingTodo.id = "upcoming";
     upcomingTodo.textContent = "Upcoming";
 
@@ -298,6 +301,10 @@ const display = (() => {
       const parentDiv = document.querySelector(".mainContent");
       if (document.querySelector(".content-wrapper") == null) {
         parentDiv.appendChild(mainContentTemplate(projectBtnPressed.target.id));
+        const contentWrapper = document.querySelector(".content-wrapper");
+        contentWrapper.appendChild(
+          tasksDom.showProjectTasks(projectBtnPressed.target.id)
+        );
       } else if (
         document.querySelector(".content-wrapper").firstChild.id !=
         projectBtnPressed.target.id
@@ -306,6 +313,10 @@ const display = (() => {
           parentDiv.removeChild(parentDiv.lastChild);
         }
         parentDiv.appendChild(mainContentTemplate(projectBtnPressed.target.id));
+        const contentWrapper = document.querySelector(".content-wrapper");
+        contentWrapper.appendChild(
+          tasksDom.showProjectTasks(projectBtnPressed.target.id)
+        );
       }
 
       tasksDom.addTaskBtnFunc();
@@ -323,15 +334,43 @@ const display = (() => {
       contentWrapper.append(contentTitle, tasksDom.addTaskBtn());
 
       //Show Tasks
-      contentWrapper.appendChild(tasksDom.showProjectTasks(title));
+      //contentWrapper.appendChild(tasksDom.showProjectTasks(title));
 
       return contentWrapper;
     };
 
-    const showTodayContent = () => {};
-    const showUpcomingContent = () => {};
+    const showTodayContent = () => {
+      const parentDiv = document.querySelector(".mainContent");
+      if (document.querySelector(".content-wrapper") == null) {
+        parentDiv.appendChild(mainContentTemplate("Today"));
+        const contentWrapper = document.querySelector(".content-wrapper");
+        contentWrapper.appendChild(tasksDom.showTodayTasks());
+      } else {
+        while (parentDiv.firstChild) {
+          parentDiv.removeChild(parentDiv.lastChild);
+        }
+        parentDiv.appendChild(mainContentTemplate("Today"));
+        const contentWrapper = document.querySelector(".content-wrapper");
+        contentWrapper.appendChild(tasksDom.showTodayTasks());
+      }
+    };
+    const showUpcomingContent = () => {
+      const parentDiv = document.querySelector(".mainContent");
+      if (document.querySelector(".content-wrapper") == null) {
+        parentDiv.appendChild(mainContentTemplate("Upcoming"));
+        const contentWrapper = document.querySelector(".content-wrapper");
+        contentWrapper.appendChild(tasksDom.showUpcomingTasks());
+      } else {
+        while (parentDiv.firstChild) {
+          parentDiv.removeChild(parentDiv.lastChild);
+        }
+        parentDiv.appendChild(mainContentTemplate("Upcoming"));
+        const contentWrapper = document.querySelector(".content-wrapper");
+        contentWrapper.appendChild(tasksDom.showUpcomingTasks());
+      }
+    };
 
-    return { showProjectContent };
+    return { showProjectContent, showTodayContent, showUpcomingContent };
   })();
 
   const tasksDom = (() => {
@@ -362,6 +401,7 @@ const display = (() => {
       taskNameInput.type = "text";
       taskNameInput.id = "taskName";
       taskNameInput.placeholder = "Task name";
+      taskNameInput.required = true;
       const taskDescInput = document.createElement("textarea");
       taskDescInput.id = "taskDesc";
       taskDescInput.maxLength = 350;
@@ -373,6 +413,7 @@ const display = (() => {
       taskDueDateInput.type = "date";
       taskDueDateInput.id = "taskDueDate";
       taskDueDateInput.placeholder = "Due Date";
+      taskDueDateInput.required = true;
 
       const taskPriorityInput = document.createElement("select");
       taskPriorityInput.id = "taskPriority";
@@ -388,6 +429,7 @@ const display = (() => {
       const highPriorty = document.createElement("option");
       highPriorty.value = "high";
       highPriorty.textContent = "High";
+      highPriorty.setAttribute("selected", "selected");
 
       taskPriorityInput.append(highPriorty, medPriorty, lowPriority);
 
@@ -519,12 +561,6 @@ const display = (() => {
       return projectDropDown;
     };
 
-    const taskFormHandler = () => {
-      //when user fills out ask form, it should take away the add task form
-      //it should create a new task and update the storage
-      //it should display the new task created in abbreviated form
-    };
-
     const updateProjectTasks = (projectTitle) => {
       const taskWrapper = document.querySelector(".task-wrapper");
       while (taskWrapper.firstChild) {
@@ -576,7 +612,13 @@ const display = (() => {
       const taskTitle = document.createElement("div");
       const taskDueDate = document.createElement("div");
       taskTitle.textContent = task.title;
-      taskDueDate.textContent = task.dueDate;
+
+      let dueDate = task.dueDate.split("-");
+      dueDate = new Date(dueDate[0], dueDate[1] - 1, dueDate[2]);
+
+      taskDueDate.textContent =
+        format(dueDate, "MMM") + " " + format(dueDate, "d");
+      taskDueDate.classList.add("task-due-date");
       taskTile.append(completebtn, taskTitle, taskDueDate);
       taskTile.taskObject = task;
       taskTile.setAttribute("data-taskObject", JSON.stringify(task));
@@ -584,12 +626,71 @@ const display = (() => {
       return taskTile;
     };
 
+    const showTodayTasks = () => {
+      const taskWrapper = document.createElement("div");
+      taskWrapper.classList.add("task-wrapper");
+      const taskArray = getTaskStorage();
+      const projectTasks = taskArray.filter((task) => {
+        let dueDate = task.dueDate.split("-");
+        const todayDate = new Date();
+
+        if (
+          parseInt(dueDate[0]) == todayDate.getFullYear() &&
+          parseInt(dueDate[1]) - 1 == todayDate.getMonth() &&
+          parseInt(dueDate[2]) == todayDate.getDate()
+        ) {
+          return task;
+        }
+      });
+      projectTasks.forEach((task) => {
+        if (
+          document.querySelector(
+            `[data-taskObject='${JSON.stringify(task)}']`
+          ) == null
+        ) {
+          taskWrapper.appendChild(createTaskTile(task));
+        }
+      });
+      return taskWrapper;
+    };
+
+    const showUpcomingTasks = () => {
+      const taskWrapper = document.createElement("div");
+      taskWrapper.classList.add("task-wrapper");
+      const taskArray = getTaskStorage();
+      const projectTasks = taskArray.filter((task) => {
+        let dueDate = task.dueDate.split("-");
+        const todayDate = new Date();
+
+        if (
+          !(
+            parseInt(dueDate[0]) == todayDate.getFullYear() &&
+            parseInt(dueDate[1]) - 1 == todayDate.getMonth() &&
+            parseInt(dueDate[2]) == todayDate.getDate()
+          )
+        ) {
+          return task;
+        }
+      });
+      projectTasks.forEach((task) => {
+        if (
+          document.querySelector(
+            `[data-taskObject='${JSON.stringify(task)}']`
+          ) == null
+        ) {
+          taskWrapper.appendChild(createTaskTile(task));
+        }
+      });
+      return taskWrapper;
+    };
     return {
       addTaskBtn,
       taskFormExpanded,
       addTaskBtnFunc,
       showProjectTasks,
       addTaskCompleteEvent,
+      showTodayTasks,
+      showUpcomingTasks,
     };
   })();
 

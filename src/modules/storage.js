@@ -51,7 +51,6 @@ const updateTaskStorage = (newTask) => {
   const taskArray = JSON.parse(getTasksJSON());
   taskArray.push(newTask);
   localStorage.setItem("tasks", JSON.stringify(taskArray));
-  const testArray = JSON.parse(getTasksJSON());
 };
 
 const getTaskStorage = () => {
