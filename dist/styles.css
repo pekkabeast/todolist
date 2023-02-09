@@ -7,6 +7,7 @@ html,
 body {
   height: 100%;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  box-sizing: border-box;
 }
 
 .pagewrapper {
@@ -35,6 +36,13 @@ body {
 .btn {
   width: 24px;
   height: 24px;
+  border: none;
+  background-color: transparent;
+  border-radius: 0.2rem;
+}
+
+.btn:hover {
+  background-color: gray;
 }
 
 .mainApp {
@@ -119,7 +127,6 @@ body {
 }
 
 .mainContent {
-  height: 100%;
   width: 100%;
   background-color: #f9fafb;
   display: flex;
@@ -257,4 +264,52 @@ body {
 
 .task-due-date {
   margin-left: auto;
+}
+
+#sandwichNavBtn,
+#homeNavBtn {
+  background: transparent;
+  border: none;
+  border-radius: 0.2rem;
+}
+
+#sandwichNavBtn:hover,
+#homeNavBtn:hover {
+  background-color: rgb(218, 96, 85);
+}
+
+.form-container {
+  border-radius: 0.2rem;
+}
+
+.addForm-btn-wrapper {
+  width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+#cancelAddProject,
+#submitAddProject {
+  background-color: transparent;
+  border: solid 1px lightgray;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+#cancelAddProject:hover {
+  background-color: lightgray;
+  color: red;
+}
+
+#submitAddProject:hover {
+  background-color: lightgray;
+  color: green;
+}
+
+#projectName {
+  height: 1.5rem;
+  padding: 0.2rem;
 }

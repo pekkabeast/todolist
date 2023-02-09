@@ -25,6 +25,7 @@ const display = (() => {
     initStorage();
     projectNavDom.initDefaultProject();
     mainContentDom.showTodayContent();
+    todoBtnEvent();
 
     //add event listeners to all buttons
   };
@@ -33,6 +34,17 @@ const display = (() => {
     //Sandwich menu button
     const sandwichBtn = document.getElementById("sandwichNavBtn");
     sandwichBtn.addEventListener("click", toggleSideNav);
+
+    const homeBtn = document.getElementById("homeNavBtn");
+    homeBtn.addEventListener("click", mainContentDom.showTodayContent);
+  };
+
+  const todoBtnEvent = () => {
+    const todayBtn = document.getElementById("today");
+    todayBtn.addEventListener("click", mainContentDom.showTodayContent);
+
+    const upcomingBtn = document.getElementById("upcoming");
+    upcomingBtn.addEventListener("click", mainContentDom.showUpcomingContent);
   };
 
   //toggles SideNavPane
@@ -49,6 +61,7 @@ const display = (() => {
       );
       parentDiv.insertBefore(sidePane, parentDiv.firstChild);
       projectNavDom.initProjectBtns();
+      todoBtnEvent();
     } else {
       parentDiv.removeChild(parentDiv.firstChild);
     }
@@ -143,11 +156,16 @@ const display = (() => {
       nameForm.id = "projectNameForm";
       //Name input field
       const nameLabel = document.createElement("label");
-      nameLabel.textContent = "Name";
+      nameLabel.textContent = "Project Name";
       nameLabel.setAttribute("for", "projectName");
+
       const nameInput = document.createElement("input");
       nameInput.type = "text";
       nameInput.id = "projectName";
+      nameInput.placeholder = "Please enter project name.";
+      nameInput.required = true;
+      const btnWrapper = document.createElement("div");
+      btnWrapper.classList.add("addForm-btn-wrapper");
       //cancel button
       const cancelBtn = document.createElement("button");
       cancelBtn.textContent = "Cancel";
@@ -158,7 +176,10 @@ const display = (() => {
       submitBtn.textContent = "Submit";
       submitBtn.id = "submitAddProject";
       submitBtn.setAttribute("type", "submit");
-      nameForm.append(nameLabel, nameInput, cancelBtn, submitBtn);
+      submitBtn.setAttribute("form", "projectNameForm");
+
+      btnWrapper.append(cancelBtn, submitBtn);
+      nameForm.append(nameLabel, nameInput, btnWrapper);
       formDiv.append(formHeader, nameForm);
       formWrapper.appendChild(formDiv);
       parentDiv.appendChild(formWrapper);
@@ -353,6 +374,8 @@ const display = (() => {
         const contentWrapper = document.querySelector(".content-wrapper");
         contentWrapper.appendChild(tasksDom.showTodayTasks());
       }
+      tasksDom.addTodoTaskBtnFunc();
+      tasksDom.addToDoTaskCompleteEvent();
     };
     const showUpcomingContent = () => {
       const parentDiv = document.querySelector(".mainContent");
@@ -368,6 +391,8 @@ const display = (() => {
         const contentWrapper = document.querySelector(".content-wrapper");
         contentWrapper.appendChild(tasksDom.showUpcomingTasks());
       }
+      tasksDom.addTodoTaskBtnFunc();
+      tasksDom.addToDoTaskCompleteEvent();
     };
 
     return { showProjectContent, showTodayContent, showUpcomingContent };
@@ -460,10 +485,147 @@ const display = (() => {
       return formWrapper;
     };
 
+    const addTodoTaskBtnFunc = () => {
+      const taskbutton = document.querySelector(".addtask-btn");
+      taskbutton.addEventListener("click", () => {
+        taskbutton.parentElement.insertBefore(
+          todotaskFormExpanded(),
+          taskbutton
+        );
+        addTodoTaskFormSubmitEvent();
+        addToDoTaskFormCancelEvent();
+        taskbutton.parentElement.removeChild(taskbutton);
+      });
+    };
+
+    const todotaskFormExpanded = () => {
+      const formWrapper = document.createElement("div");
+      formWrapper.classList.add("taskForm-wrapper");
+      const taskGenerateForm = document.createElement("form");
+      taskGenerateForm.classList.add("taskForm-expanded");
+      taskGenerateForm.id = "newTaskForm";
+      const taskNameInput = document.createElement("input");
+      taskNameInput.type = "text";
+      taskNameInput.id = "taskName";
+      taskNameInput.placeholder = "Task name";
+      taskNameInput.required = true;
+      const taskDescInput = document.createElement("textarea");
+      taskDescInput.id = "taskDesc";
+      taskDescInput.maxLength = 350;
+      taskDescInput.placeholder = "Description (350 chars max)";
+      //Categories
+      const taskCategoryWrapper = document.createElement("div");
+      taskCategoryWrapper.id = "taskCategory-wrapper";
+      const taskDueDateInput = document.createElement("input");
+      taskDueDateInput.type = "date";
+      taskDueDateInput.id = "taskDueDate";
+      taskDueDateInput.placeholder = "Due Date";
+      taskDueDateInput.required = true;
+
+      const taskPriorityInput = document.createElement("select");
+      taskPriorityInput.id = "taskPriority";
+
+      const lowPriority = document.createElement("option");
+      lowPriority.value = "low";
+      lowPriority.textContent = "Low";
+
+      const medPriorty = document.createElement("option");
+      medPriorty.value = "med";
+      medPriorty.textContent = "Medium";
+
+      const highPriorty = document.createElement("option");
+      highPriorty.value = "high";
+      highPriorty.textContent = "High";
+      highPriorty.setAttribute("selected", "selected");
+
+      taskPriorityInput.append(highPriorty, medPriorty, lowPriority);
+
+      const cancelBtn = document.createElement("button");
+      cancelBtn.textContent = "Cancel";
+      cancelBtn.id = "cancelAddTask";
+      cancelBtn.classList.add("cancel-task-btn");
+
+      const taskSubmitBtn = document.createElement("input");
+      taskSubmitBtn.classList.add("tasksubmit-btn");
+      taskSubmitBtn.type = "submit";
+      taskSubmitBtn.value = "Create Task";
+
+      taskCategoryWrapper.append(
+        taskDueDateInput,
+        taskPriorityInput,
+        dropDownProjects(),
+        cancelBtn,
+        taskSubmitBtn
+      );
+      taskGenerateForm.append(
+        taskNameInput,
+        taskDescInput,
+        taskCategoryWrapper
+      );
+      formWrapper.appendChild(taskGenerateForm);
+
+      return formWrapper;
+    };
+
+    const addTodoTaskFormSubmitEvent = () => {
+      const addTaskForm = document.getElementById("newTaskForm");
+      const taskName = document.getElementById("taskName");
+      const taskDesc = document.getElementById("taskDesc");
+      const taskDueDate = document.getElementById("taskDueDate");
+      const taskPriority = document.getElementById("taskPriority");
+      const taskProject = document.getElementById("taskProject");
+      addTaskForm.addEventListener("submit", (e) => {
+        if (
+          checkExistingTask(
+            taskName.value,
+            taskDesc.value,
+            taskDueDate.value,
+            taskPriority.value,
+            taskProject.value
+          )
+        ) {
+          createNewTask(
+            taskName.value,
+            taskDesc.value,
+            taskDueDate.value,
+            taskPriority.value,
+            taskProject.value
+          );
+          if (document.querySelector(".content-title").textContent == "Today") {
+            mainContentDom.showTodayContent();
+          } else if (
+            document.querySelector(".content-title").textContent == "Upcoming"
+          ) {
+            mainContentDom.showUpcomingContent();
+          }
+          addTaskForm.reset();
+        } else {
+          if (document.querySelector(".error-msg") == null) {
+            duplicateTaskPrompt();
+            setTimeout(function () {
+              const errormsg = document.querySelector(".error-msg");
+              if (errormsg != null) {
+                errormsg.parentElement.removeChild(errormsg);
+              }
+            }, 3000);
+          }
+        }
+
+        e.preventDefault();
+      });
+    };
+
     const hideTaskForm = () => {
       const taskForm = document.querySelector(".taskForm-wrapper");
       taskForm.parentElement.insertBefore(addTaskBtn(), taskForm);
       addTaskBtnFunc();
+      taskForm.parentElement.removeChild(taskForm);
+    };
+
+    const toDoHideTaskForm = () => {
+      const taskForm = document.querySelector(".taskForm-wrapper");
+      taskForm.parentElement.insertBefore(addTaskBtn(), taskForm);
+      addTodoTaskBtnFunc();
       taskForm.parentElement.removeChild(taskForm);
     };
 
@@ -511,6 +673,7 @@ const display = (() => {
         e.preventDefault();
       });
     };
+
     const duplicateTaskPrompt = () => {
       const taskForm = document.querySelector(".taskForm-wrapper");
       const errormsg = document.createElement("div");
@@ -533,6 +696,20 @@ const display = (() => {
       });
     };
 
+    const addToDoTaskFormCancelEvent = () => {
+      const cancelBtn = document.getElementById("cancelAddTask");
+      const addTaskForm = document.getElementById("newTaskForm");
+      cancelBtn.addEventListener("click", (e) => {
+        addTaskForm.reset();
+        toDoHideTaskForm();
+        if (document.querySelector(".error-msg") != null) {
+          const errormsg = document.querySelector(".error-msg");
+          errormsg.parentElement.removeChild(errormsg);
+        }
+        e.preventDefault();
+      });
+    };
+
     //duplicate tasks will be all removed if one of them is completed
     const addTaskCompleteEvent = () => {
       const completeBtns = document.querySelectorAll(".complete-btn");
@@ -543,6 +720,24 @@ const display = (() => {
           updateProjectTasks(
             document.querySelector(".content-title").textContent
           );
+        });
+      });
+    };
+
+    const addToDoTaskCompleteEvent = () => {
+      const completeBtns = document.querySelectorAll(".complete-btn");
+
+      completeBtns.forEach((completebtn) => {
+        completebtn.addEventListener("click", () => {
+          removeTaskStorage(completebtn.parentElement.taskObject);
+
+          if (document.querySelector(".content-title").textContent == "Today") {
+            mainContentDom.showTodayContent();
+          } else if (
+            document.querySelector(".content-title").textContent == "Upcoming"
+          ) {
+            mainContentDom.showUpcomingContent();
+          }
         });
       });
     };
@@ -687,10 +882,12 @@ const display = (() => {
       addTaskBtn,
       taskFormExpanded,
       addTaskBtnFunc,
+      addTodoTaskBtnFunc,
       showProjectTasks,
       addTaskCompleteEvent,
       showTodayTasks,
       showUpcomingTasks,
+      addToDoTaskCompleteEvent,
     };
   })();
 
